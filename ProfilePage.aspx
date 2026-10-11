@@ -22,15 +22,15 @@
         .page-wrapper {
             display: flex;
             width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            align-items: flex-start;
         }
 
         .left-sidebar {
             width: 275px;
             min-height: 100vh;
-            padding: 12px 16px;
+            padding: 8px 12px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -38,13 +38,14 @@
             flex-direction: column;
             overflow-y: auto;
             flex-shrink: 0;
-            border-right: 1px solid #2f3336;
         }
 
         .main-profile {
             flex: 1;
             min-width: 0;
             min-height: 100vh;
+            border-left: 1px solid #2f3336;
+            border-right: 1px solid #2f3336;
         }
 
         .x-logo {
@@ -465,7 +466,7 @@
                 <div class="user-info-name"><asp:Label ID="lblSidebarName" runat="server" /></div>
                 <div class="user-info-handle"><asp:Label ID="lblSidebarUsername" runat="server" /></div>
             </div>
-            <i class="bi bi-three-dots" style="color:#71767b;"></i>
+            <%--<i class="bi bi-three-dots" style="color:#71767b;"></i>--%>
         </div>
     </div>
 

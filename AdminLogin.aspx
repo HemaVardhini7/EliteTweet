@@ -103,7 +103,7 @@
 
             <!-- Back to site -->
             <div class="text-center mt-3">
-                <a href="LoginForm.aspx" style="color:#1d9bf0; font-size:14px;">
+                <a href="FirstPage.aspx" style="color:#1d9bf0; font-size:14px;">
                     <i class="bi bi-arrow-left me-1"></i>Back to EliteTweet
                 </a>
             </div>

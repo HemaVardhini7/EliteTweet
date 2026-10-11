@@ -23,16 +23,16 @@
         .page-wrapper {
             display: flex;
             width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            align-items: flex-start;
         }
 
         /* ─── LEFT SIDEBAR ─── */
         .left-sidebar {
             width: 275px;
             min-height: 100vh;
-            padding: 12px 16px;
+            padding: 8px 12px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -40,7 +40,6 @@
             flex-direction: column;
             overflow-y: auto;
             flex-shrink: 0;
-            border-right: 1px solid #2f3336;
         }
 
         .x-logo {
@@ -120,6 +119,8 @@
             flex: 1;
             min-width: 0;
             min-height: 100vh;
+            border-left: 1px solid #2f3336;
+            border-right: 1px solid #2f3336;
         }
 
         /* ─── STICKY HEADER ─── */
@@ -310,7 +311,7 @@
         <a class="nav-item" href="Notifications.aspx">
             <i class="bi bi-bell"></i> Notifications
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="Follow.aspx?tab=following">
             <i class="bi bi-people"></i> Follow
         </a>
         <a class="nav-item" href="Bookmarks.aspx">

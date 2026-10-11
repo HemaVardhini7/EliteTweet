@@ -24,6 +24,24 @@ namespace EliteTweet
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// lblSidebarName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSidebarName;
+
+        /// <summary>
+        /// lblSidebarHandle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSidebarHandle;
+
+        /// <summary>
         /// rptRequests control.
         /// </summary>
         /// <remarks>
@@ -58,9 +76,5 @@ namespace EliteTweet
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNoActivity;
-
-        protected global::System.Web.UI.WebControls.Label lblSidebarName;
-
-        protected global::System.Web.UI.WebControls.Label lblSidebarHandle;
     }
 }

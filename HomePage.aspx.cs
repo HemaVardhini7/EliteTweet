@@ -80,57 +80,65 @@ namespace EliteTweet
             using (SqlConnection con = new SqlConnection(strcon))
             {
                 string query = @"
-            SELECT
-                t.TweetId,
-                t.TweetText,
-                t.ImagePath,
-                t.CreatedAt,
-                u.Name,
-                u.Username,
-                ISNULL(u.IsVerified, 0) AS IsVerified,
+                SELECT
+                    t.TweetId,
+                    t.TweetText,
+                    t.ImagePath,
+                    t.CreatedAt,
+                    u.Name,
+                    u.Username,
+                    ISNULL(u.IsVerified, 0) AS IsVerified,
 
-                (SELECT COUNT(*)
-                 FROM Likes l
-                 WHERE l.TweetId = t.TweetId) AS LikeCount,
+                    (SELECT COUNT(*)
+                     FROM Likes l
+                     WHERE l.TweetId = t.TweetId) AS LikeCount,
 
-                (SELECT COUNT(*)
-                 FROM Comments c
-                 WHERE c.TweetId = t.TweetId) AS CommentCount,
+                    (SELECT COUNT(*)
+                     FROM Comments c
+                     WHERE c.TweetId = t.TweetId) AS CommentCount,
 
-                (SELECT COUNT(*)
-                 FROM Retweets r
-                 WHERE r.TweetId = t.TweetId) AS RetweetCount,
+                    (SELECT COUNT(*)
+                     FROM Retweets r
+                     WHERE r.TweetId = t.TweetId) AS RetweetCount,
 
-                CASE WHEN EXISTS (
-                    SELECT 1
-                    FROM Bookmarks b
-                    WHERE b.TweetId = t.TweetId
-                    AND b.Email = @Email
-                )
-                THEN 1 ELSE 0 END AS IsBookmarked
+                    CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM Bookmarks b
+                        WHERE b.TweetId = t.TweetId
+                          AND b.Email = @Email
+                    )
+                    THEN 1 ELSE 0 END AS IsBookmarked,
 
-            FROM Tweets t
+                    CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM Likes l
+                        WHERE l.TweetId = t.TweetId
+                          AND l.Email = @Email
+                    )
+                    THEN 1 ELSE 0 END AS IsLiked
 
-            INNER JOIN Users u
-                ON t.Email = u.Email
+                FROM Tweets t
 
-            WHERE
-                (
-                    @Feed = 'ForYou'
-                    OR
+                INNER JOIN Users u
+                    ON t.Email = u.Email
+
+                WHERE
                     (
-                        @Feed = 'Following'
-                        AND EXISTS (
-                            SELECT 1
-                            FROM Followers f
-                            WHERE f.FollowerEmail = @Email
-                              AND f.FollowingEmail = t.Email
-                              AND f.Status = 'Accepted'
+                        @Feed = 'ForYou'
+                        OR
+                        (
+                            @Feed = 'Following'
+                            AND EXISTS (
+                                SELECT 1
+                                FROM Followers f
+                                WHERE f.FollowerEmail = @Email
+                                  AND f.FollowingEmail = t.Email
+                                  AND f.Status = 'Accepted'
+                            )
                         )
                     )
-                )
 
-            ORDER BY t.CreatedAt DESC";
+                ORDER BY t.CreatedAt DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

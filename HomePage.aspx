@@ -23,15 +23,15 @@
         .page-wrapper {
             display: flex;
             width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+            max-width: 1280px;
+            margin: 0 auto;
+            align-items: flex-start;
         }
 
         .left-sidebar {
             width: 275px;
             min-height: 100vh;
-            padding: 12px 16px;
+            padding: 8px 12px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -39,13 +39,14 @@
             flex-direction: column;
             overflow-y: auto;
             flex-shrink: 0;
-            border-right: 1px solid #2f3336;
         }
 
         .main-feed {
             flex: 1;
             min-width: 0;
             min-height: 100vh;
+            border-left: 1px solid #2f3336;
+            border-right: 1px solid #2f3336;
         }
 
         .x-logo {
@@ -657,6 +658,21 @@
         background: transparent;
     }
 
+
+
+    .tweet-action.liked {
+        color: #f91880;
+    }
+
+    .tweet-action.liked i {
+        color: #f91880;
+    }
+
+    .tweet-action.liked:hover {
+        color: #f91880;
+        background: rgba(249, 24, 128, 0.1);
+    }
+
     </style>
 </head>
 <body>
@@ -679,7 +695,7 @@
         <a class="nav-item" href="Notifications.aspx">
             <i class="bi bi-bell"></i> Notifications
         </a>
-        <a class="nav-item" href="#">
+        <a class="nav-item" href="Follow.aspx?tab=following">
             <i class="bi bi-people"></i> Follow
         </a>
         <%--<a class="nav-item" href="#">
@@ -824,8 +840,8 @@
                                 <i class="bi bi-arrow-repeat"></i>
                                 <span><%# Eval("RetweetCount") %></span>
                             </div>
-                            <div class="tweet-action" onclick="submitLike('<%# Eval("TweetId") %>')">
-                                <i class="bi bi-heart"></i>
+                            <div class='<%# Convert.ToInt32(Eval("IsLiked")) == 1 ? "tweet-action liked" : "tweet-action" %>' onclick="submitLike('<%# Eval("TweetId") %>')">
+                                <i class='<%# Convert.ToInt32(Eval("IsLiked")) == 1 ? "bi bi-heart-fill" : "bi bi-heart" %>'></i>
                                 <span><%# Eval("LikeCount") %></span>
                             </div>
                             <%--<div class="tweet-action">

@@ -127,6 +127,7 @@
     <Content Include="ContentSafetyTest.aspx" />
     <Content Include="Explore.aspx" />
     <Content Include="FirstPage.aspx" />
+    <Content Include="Follow.aspx" />
     <Content Include="HomePage.aspx" />
     <Content Include="LoginForm.aspx" />
     <Content Include="Notifications.aspx" />
@@ -172,6 +173,13 @@
     </Compile>
     <Compile Include="Explore.aspx.designer.cs">
       <DependentUpon>Explore.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Follow.aspx.cs">
+      <DependentUpon>Follow.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Follow.aspx.designer.cs">
+      <DependentUpon>Follow.aspx</DependentUpon>
     </Compile>
     <Compile Include="Helpers\EmailService.cs" />
     <Compile Include="Helpers\ImageUploadHelper.cs" />
