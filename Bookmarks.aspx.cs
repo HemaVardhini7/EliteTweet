@@ -13,6 +13,10 @@ namespace EliteTweet
         string strcon = ConfigurationManager
             .ConnectionStrings["TwitterDB"].ConnectionString;
 
+        private string CurrentEmail
+        {
+            get { return Convert.ToString(Session["Email"]); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["Email"] == null &&
@@ -30,6 +34,7 @@ namespace EliteTweet
             if (!IsPostBack)
             {
                 LoadBookmarks();
+                LoadSidebarUser();
             }
         }
 
@@ -45,6 +50,7 @@ namespace EliteTweet
                     t.CreatedAt,
                     u.Name,
                     u.Username,
+                    u.ProfilePicture,
 
                     (SELECT COUNT(*)
                      FROM Likes l
@@ -88,6 +94,78 @@ namespace EliteTweet
             }
         }
 
+        protected void rptBookmarks_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.Item &&
+                e.Item.ItemType != ListItemType.AlternatingItem)
+                return;
+
+            DataRowView row = (DataRowView)e.Item.DataItem;
+
+            Image imgProfile = (Image)e.Item.FindControl("imgTweetProfile");
+            Panel pnlDefaultAvatar = (Panel)e.Item.FindControl("pnlDefaultTweetAvatar");
+
+            string profilePicture = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : Convert.ToString(row["ProfilePicture"]).Trim();
+
+            if (!string.IsNullOrWhiteSpace(profilePicture))
+            {
+                if (profilePicture.StartsWith("~/"))
+                    profilePicture = profilePicture.Substring(2);
+
+                imgProfile.ImageUrl = ResolveUrl("~/" + profilePicture.TrimStart('/'));
+                imgProfile.Visible = true;
+                pnlDefaultAvatar.Visible = false;
+            }
+            else
+            {
+                imgProfile.Visible = false;
+                pnlDefaultAvatar.Visible = true;
+            }
+        }
+
+        private void LoadSidebarUser()
+        {
+            using (SqlConnection con = new SqlConnection(strcon))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT Name, Username, ProfilePicture FROM Users WHERE Email = @Email", con))
+            {
+                cmd.Parameters.Add("@Email", SqlDbType.VarChar, 100).Value = CurrentEmail;
+                con.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        lblSidebarName.Text = Convert.ToString(reader["Name"]);
+                        lblSidebarHandle.Text = "@" + Convert.ToString(reader["Username"]);
+
+                        string profilePicture = reader["ProfilePicture"] == DBNull.Value
+                            ? ""
+                            : Convert.ToString(reader["ProfilePicture"]).Trim();
+
+                        if (!string.IsNullOrWhiteSpace(profilePicture))
+                        {
+                            if (profilePicture.StartsWith("~/"))
+                                profilePicture = profilePicture.Substring(2);
+
+                            imgSidebarProfile.ImageUrl =
+                                ResolveUrl("~/" + profilePicture.TrimStart('/'));
+
+                            imgSidebarProfile.Visible = true;
+                            pnlSidebarDefaultAvatar.Visible = false;
+                        }
+                        else
+                        {
+                            imgSidebarProfile.Visible = false;
+                            pnlSidebarDefaultAvatar.Visible = true;
+                        }
+                    }
+                }
+            }
+        }
+
         protected void rptBookmarks_ItemCommand(
             object source, RepeaterCommandEventArgs e)
         {
@@ -118,5 +196,7 @@ namespace EliteTweet
 
             LoadBookmarks();
         }
+
+
     }
 }

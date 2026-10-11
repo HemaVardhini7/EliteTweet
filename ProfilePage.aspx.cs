@@ -33,6 +33,7 @@ namespace EliteTweet
                 LoadLikedTweets();
                 LoadReplies();
                 LoadMedia();
+                LoadVerificationStatus();
             }
         }
 
@@ -55,6 +56,27 @@ namespace EliteTweet
 
                 lblSidebarName.Text = name;
                 lblSidebarUsername.Text = username;
+
+                string sidebarProfilePath = dr["ProfilePicture"] == DBNull.Value
+                    ? ""
+                    : dr["ProfilePicture"].ToString().Trim();
+
+                if (!string.IsNullOrWhiteSpace(sidebarProfilePath))
+                {
+                    if (sidebarProfilePath.StartsWith("~/"))
+                        sidebarProfilePath = sidebarProfilePath.Substring(2);
+
+                    imgSidebarProfile.ImageUrl =
+                        ResolveUrl("~/" + sidebarProfilePath.TrimStart('/'));
+
+                    imgSidebarProfile.Visible = true;
+                    pnlSidebarDefaultAvatar.Visible = false;
+                }
+                else
+                {
+                    imgSidebarProfile.Visible = false;
+                    pnlSidebarDefaultAvatar.Visible = true;
+                }
                 lblTopName.Text = name;
                 lblName.Text = name;
                 lblUsername.Text = username;
@@ -299,8 +321,8 @@ namespace EliteTweet
         {
             string email = ProfileEmail;
             SqlConnection con = new SqlConnection(strcon);
-            string query = "SELECT t.TweetId, t.TweetText, t.CreatedAt, u.Name, u.Username, " +
-                           "ISNULL(u.IsVerified, 0) AS IsVerified, " +
+            string query = "SELECT t.TweetId, t.TweetText, t.CreatedAt, u.Name, u.Username, u.ProfilePicture, " +
+                          "ISNULL(u.IsVerified, 0) AS IsVerified, " +
                            "(SELECT COUNT(*) FROM Likes    l WHERE l.TweetId = t.TweetId) AS LikeCount, " +
                            "(SELECT COUNT(*) FROM Comments c WHERE c.TweetId = t.TweetId) AS CommentCount, " +
                            "(SELECT COUNT(*) FROM Retweets r WHERE r.TweetId = t.TweetId) AS RetweetCount " +
@@ -324,11 +346,44 @@ namespace EliteTweet
             pnlNoPosts.Visible = (dt.Rows.Count == 0);
         }
 
+        protected void rptPosts_ItemDataBound(object sender, System.Web.UI.WebControls.RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != System.Web.UI.WebControls.ListItemType.Item &&
+                e.Item.ItemType != System.Web.UI.WebControls.ListItemType.AlternatingItem)
+                return;
+
+            DataRowView row = (DataRowView)e.Item.DataItem;
+
+            System.Web.UI.WebControls.Image img =
+                (System.Web.UI.WebControls.Image)e.Item.FindControl("imgPostProfile");
+
+            System.Web.UI.WebControls.Panel pnl =
+                (System.Web.UI.WebControls.Panel)e.Item.FindControl("pnlPostDefaultAvatar");
+
+            string path = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : Convert.ToString(row["ProfilePicture"]).Trim();
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                if (path.StartsWith("~/"))
+                    path = path.Substring(2);
+
+                img.ImageUrl = ResolveUrl("~/" + path.TrimStart('/'));
+                img.Visible = true;
+                pnl.Visible = false;
+            }
+            else
+            {
+                img.Visible = false;
+                pnl.Visible = true;
+            }
+        }
         private void LoadLikedTweets()
         {
             string email = ProfileEmail;
             SqlConnection con = new SqlConnection(strcon);
-            string query = "SELECT t.TweetId, t.TweetText, t.CreatedAt, u.Name, u.Username, " +
+            string query = "SELECT t.TweetId, t.TweetText, t.CreatedAt, u.Name, u.Username, u.ProfilePicture, " +
                            "ISNULL(u.IsVerified, 0) AS IsVerified, " +
                            "(SELECT COUNT(*) FROM Likes    l WHERE l.TweetId = t.TweetId) AS LikeCount, " +
                            "(SELECT COUNT(*) FROM Comments c WHERE c.TweetId = t.TweetId) AS CommentCount, " +
@@ -353,12 +408,48 @@ namespace EliteTweet
 
             pnlNoLikes.Visible = (dt.Rows.Count == 0);
         }
+
+        protected void rptLikes_ItemDataBound(object sender, System.Web.UI.WebControls.RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != System.Web.UI.WebControls.ListItemType.Item &&
+                e.Item.ItemType != System.Web.UI.WebControls.ListItemType.AlternatingItem)
+                return;
+
+            DataRowView row = (DataRowView)e.Item.DataItem;
+
+            System.Web.UI.WebControls.Image img =
+                (System.Web.UI.WebControls.Image)e.Item.FindControl("imgLikeProfile");
+
+            System.Web.UI.WebControls.Panel pnl =
+                (System.Web.UI.WebControls.Panel)e.Item.FindControl("pnlLikeDefaultAvatar");
+
+            string path = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : Convert.ToString(row["ProfilePicture"]).Trim();
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                if (path.StartsWith("~/"))
+                    path = path.Substring(2);
+
+                img.ImageUrl = ResolveUrl("~/" + path.TrimStart('/'));
+                img.Visible = true;
+                pnl.Visible = false;
+            }
+            else
+            {
+                img.Visible = false;
+                pnl.Visible = true;
+            }
+        }
+
+
         private void LoadReplies()
         {
             string email = ProfileEmail;
             SqlConnection con = new SqlConnection(strcon);
-            string query = "SELECT c.CommentText, c.CreatedAt, u.Name, u.Username, " +
-               "ISNULL(u.IsVerified, 0) AS IsVerified, " +
+            string query = "SELECT c.CommentText, c.CreatedAt, u.Name, u.Username, u.ProfilePicture, " +
+                "ISNULL(u.IsVerified, 0) AS IsVerified, " +
                "tu.Username AS TweetAuthor , t.TweetText " +
                "FROM Comments c " +
                "INNER JOIN Users u  ON c.Email   = u.Email " +
@@ -380,6 +471,163 @@ namespace EliteTweet
             rptReplies.DataBind();
 
             pnlNoReplies.Visible = (dt.Rows.Count == 0);
+        }
+
+        protected void rptReplies_ItemDataBound(object sender, System.Web.UI.WebControls.RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != System.Web.UI.WebControls.ListItemType.Item &&
+                e.Item.ItemType != System.Web.UI.WebControls.ListItemType.AlternatingItem)
+                return;
+
+            DataRowView row = (DataRowView)e.Item.DataItem;
+
+            System.Web.UI.WebControls.Image img =
+                (System.Web.UI.WebControls.Image)e.Item.FindControl("imgReplyProfile");
+
+            System.Web.UI.WebControls.Panel pnl =
+                (System.Web.UI.WebControls.Panel)e.Item.FindControl("pnlReplyDefaultAvatar");
+
+            string path = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : Convert.ToString(row["ProfilePicture"]).Trim();
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                if (path.StartsWith("~/"))
+                    path = path.Substring(2);
+
+                img.ImageUrl = ResolveUrl("~/" + path.TrimStart('/'));
+                img.Visible = true;
+                pnl.Visible = false;
+            }
+            else
+            {
+                img.Visible = false;
+                pnl.Visible = true;
+            }
+        }
+
+        private void LoadVerificationStatus()
+        {
+            string email = Session["Email"]?.ToString();
+
+            if (string.IsNullOrEmpty(email))
+                return;
+
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                string query = @"
+            SELECT IsVerified, VerificationRequest
+            FROM Users
+            WHERE Email = @Email";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+                    con.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            bool isVerified = reader["IsVerified"] != DBNull.Value
+                                && Convert.ToBoolean(reader["IsVerified"]);
+
+                            bool requestPending = reader["VerificationRequest"] != DBNull.Value
+                                && Convert.ToBoolean(reader["VerificationRequest"]);
+
+                            pnlNotVerified.Visible = !isVerified;
+
+                            if (isVerified)
+                            {
+                                return;
+                            }
+
+                            if (requestPending)
+                            {
+                                btnGetVerified.Text = "Request pending";
+                                btnGetVerified.Enabled = false;
+                            }
+                            else
+                            {
+                                btnGetVerified.Text = "Get verified";
+                                btnGetVerified.Enabled = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void btnGetVerified_Click(object sender, EventArgs e)
+        {
+            string email = Session["Email"]?.ToString();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                Response.Redirect("LoginForm.aspx");
+                return;
+            }
+
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                con.Open();
+
+                string query = @"
+            UPDATE Users
+            SET VerificationRequest = 1
+            WHERE Email = @Email
+              AND ISNULL(IsVerified, 0) = 0
+              AND VerificationRequest = 0";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+
+                    int rows = cmd.ExecuteNonQuery();
+
+                    if (rows > 0)
+                    {
+                        btnGetVerified.Text = "Request submitted";
+                        btnGetVerified.Enabled = false;
+                    }
+                    else
+                    {
+                        string checkQuery = @"
+                    SELECT IsVerified, VerificationRequest
+                    FROM Users
+                    WHERE Email = @Email";
+
+                        using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
+                        {
+                            checkCmd.Parameters.AddWithValue("@Email", email);
+
+                            using (SqlDataReader reader = checkCmd.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    bool isVerified = reader["IsVerified"] != DBNull.Value
+                                        && Convert.ToBoolean(reader["IsVerified"]);
+
+                                    bool requestPending = reader["VerificationRequest"] != DBNull.Value
+                                        && Convert.ToBoolean(reader["VerificationRequest"]);
+
+                                    if (isVerified)
+                                    {
+                                        btnGetVerified.Text = "Already verified";
+                                        btnGetVerified.Enabled = false;
+                                    }
+                                    else if (requestPending)
+                                    {
+                                        btnGetVerified.Text = "Request pending";
+                                        btnGetVerified.Enabled = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

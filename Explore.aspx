@@ -286,6 +286,14 @@
         .empty-state i { font-size: 44px; margin-bottom: 12px; display: block; }
         .empty-state p { font-size: 15px; margin: 0; }
 
+                .user-avatar img,
+        .user-card-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         /* ─── SCROLLBAR HIDE ─── */
         ::-webkit-scrollbar { width: 0; }
     </style>
@@ -330,15 +338,18 @@
 
         <div class="user-profile-bottom">
             <div class="user-avatar">
-                <i class="bi bi-person-fill"></i>
+                <asp:Image ID="imgSidebarProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlSidebarDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
             </div>
+
             <div class="flex-grow-1">
-                <div class="user-info-name">
-                    <asp:Label ID="lblSidebarName" runat="server" Text="User" />
-                </div>
-                <div class="user-info-handle">
-                    <asp:Label ID="lblSidebarHandle" runat="server" Text="@username" />
-                </div>
+                <div class="user-info-name"><asp:Label ID="lblSidebarName" runat="server" Text="User" /></div>
+                <div class="user-info-handle"><asp:Label ID="lblSidebarHandle" runat="server" Text="@username" /></div>
             </div>
         </div>
 
@@ -373,7 +384,13 @@
                 <div class="user-card">
 
                     <div class="user-card-avatar">
-                        <i class="bi bi-person-fill"></i>
+                        <asp:Image ID="imgUserProfile" runat="server"
+                            AlternateText="Profile picture"
+                            Visible="false" />
+
+                        <asp:Panel ID="pnlDefaultUserAvatar" runat="server">
+                            <i class="bi bi-person-fill"></i>
+                        </asp:Panel>
                     </div>
 
                     <div class="user-card-info">

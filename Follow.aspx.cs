@@ -48,7 +48,7 @@ namespace EliteTweet
         {
             using (SqlConnection con = new SqlConnection(strcon))
             using (SqlCommand cmd = new SqlCommand(
-                "SELECT Name, Username FROM Users WHERE Email = @Email", con))
+                "SELECT Name, Username, ProfilePicture FROM Users WHERE Email = @Email", con))
             {
                 cmd.Parameters.Add("@Email", SqlDbType.VarChar, 100).Value = CurrentEmail;
                 con.Open();
@@ -59,8 +59,31 @@ namespace EliteTweet
                     {
                         lblSidebarName.Text = Convert.ToString(reader["Name"]);
                         lblSidebarHandle.Text = "@" + Convert.ToString(reader["Username"]);
+
+                        // Keep the existing Follow page heading and handle.
                         lblPageTitle.Text = Convert.ToString(reader["Name"]);
                         lblCurrentHandle.Text = "@" + Convert.ToString(reader["Username"]);
+
+                        string profilePicture = reader["ProfilePicture"] == DBNull.Value
+                            ? ""
+                            : Convert.ToString(reader["ProfilePicture"]).Trim();
+
+                        if (!string.IsNullOrWhiteSpace(profilePicture))
+                        {
+                            if (profilePicture.StartsWith("~/"))
+                                profilePicture = profilePicture.Substring(2);
+
+                            imgSidebarProfile.ImageUrl =
+                                ResolveUrl("~/" + profilePicture.TrimStart('/'));
+
+                            imgSidebarProfile.Visible = true;
+                            pnlSidebarDefaultAvatar.Visible = false;
+                        }
+                        else
+                        {
+                            imgSidebarProfile.Visible = false;
+                            pnlSidebarDefaultAvatar.Visible = true;
+                        }
                     }
                 }
             }

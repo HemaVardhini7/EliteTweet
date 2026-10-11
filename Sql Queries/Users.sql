@@ -14,14 +14,15 @@ CREATE TABLE Users (
     Username VARCHAR(100),
     Password VARCHAR(100)
 );
-GO
 
-GO
 
 ALTER TABLE Users
 ADD ProfilePicture VARCHAR(300) NULL,
     CoverPicture VARCHAR(300) NULL,
     Bio NVARCHAR(160) NULL;
-GO
+
+
+ALTER TABLE Users
+ADD VerificationRequest BIT NOT NULL DEFAULT 0;
 
 -- localhost\SQLEXPRESS

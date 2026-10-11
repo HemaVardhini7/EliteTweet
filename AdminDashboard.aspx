@@ -433,6 +433,12 @@ body {
                 <i class="bi bi-flag"></i>
                 <span>Reports</span>
             </button>
+            <button type="button"
+                    class="sidebar-item"
+                    onclick="switchTab('verification', this)">
+                <i class="bi bi-patch-check"></i>
+                <span>Verification Requests</span>
+            </button>
 
         </div>
 
@@ -808,6 +814,94 @@ body {
                 </asp:Repeater>
 
             </div>
+
+            <!-- ================= VERIFICATION REQUESTS ================= -->
+
+        <div id="tab-verification" class="tab-panel">
+
+            <div class="section-header">
+                <h2>Verification Requests</h2>
+            </div>
+
+            <asp:Panel ID="pnlNoVerificationRequests"
+                runat="server"
+                Visible="false">
+
+                <div class="empty-state">
+                    <i class="bi bi-patch-check"></i>
+                    No pending verification requests.
+                </div>
+
+            </asp:Panel>
+
+            <asp:Repeater ID="rptVerificationRequests"
+                runat="server"
+                OnItemCommand="rptVerificationRequests_ItemCommand">
+
+                <HeaderTemplate>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                </HeaderTemplate>
+
+                <ItemTemplate>
+                    <tr>
+
+                        <td style="color:#71767b;">
+                            <%# Eval("UserId") %>
+                        </td>
+
+                        <td>
+                            <strong><%# Eval("Name") %></strong>
+                        </td>
+
+                        <td style="color:#71767b;">
+                            @<%# Eval("Username") %>
+                        </td>
+
+                        <td style="color:#71767b;">
+                            <%# Eval("Email") %>
+                        </td>
+
+                        <td>
+
+                            <asp:LinkButton
+                                runat="server"
+                                CommandName="Approve"
+                                CommandArgument='<%# Eval("Email") %>'
+                                CssClass="btn-action btn-verify"
+                                Text="Approve"
+                                OnClientClick="return confirm('Approve this verification request?');" />
+
+                            <asp:LinkButton
+                                runat="server"
+                                CommandName="Reject"
+                                CommandArgument='<%# Eval("Email") %>'
+                                CssClass="btn-action btn-delete"
+                                Text="Reject"
+                                OnClientClick="return confirm('Reject this verification request?');" />
+
+                        </td>
+
+                    </tr>
+                </ItemTemplate>
+
+                <FooterTemplate>
+                        </tbody>
+                    </table>
+                </FooterTemplate>
+
+            </asp:Repeater>
+
+        </div>
 
         </div>
 

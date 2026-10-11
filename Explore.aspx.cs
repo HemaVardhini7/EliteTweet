@@ -12,6 +12,11 @@ namespace EliteTweet
         string strcon = ConfigurationManager
             .ConnectionStrings["TwitterDB"].ConnectionString;
 
+        private string CurrentEmail
+        {
+            get { return Convert.ToString(Session["Email"]); }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["Email"] == null && User.Identity.IsAuthenticated)
@@ -24,7 +29,11 @@ namespace EliteTweet
             }
 
             if (!IsPostBack)
+            {
+                LoadSidebarUser();
                 LoadUsers("");
+            }
+                
         }
 
 
@@ -36,6 +45,30 @@ namespace EliteTweet
 
             DataRowView row = (DataRowView)e.Item.DataItem;
 
+            // Set profile picture
+            Image imgProfile = (Image)e.Item.FindControl("imgUserProfile");
+            Panel pnlDefaultAvatar = (Panel)e.Item.FindControl("pnlDefaultUserAvatar");
+
+            string profilePicture = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : Convert.ToString(row["ProfilePicture"]).Trim();
+
+            if (!string.IsNullOrWhiteSpace(profilePicture))
+            {
+                if (profilePicture.StartsWith("~/"))
+                    profilePicture = profilePicture.Substring(2);
+
+                imgProfile.ImageUrl = ResolveUrl("~/" + profilePicture.TrimStart('/'));
+                imgProfile.Visible = true;
+                pnlDefaultAvatar.Visible = false;
+            }
+            else
+            {
+                imgProfile.Visible = false;
+                pnlDefaultAvatar.Visible = true;
+            }
+
+            // Keep existing Follow button status logic
             LinkButton btn = (LinkButton)e.Item.FindControl("btnFollow");
 
             string status = row["FollowStatus"].ToString();
@@ -130,6 +163,47 @@ namespace EliteTweet
             LoadUsers(txtSearch.Text.Trim());
         }
 
+        private void LoadSidebarUser()
+        {
+            using (SqlConnection con = new SqlConnection(strcon))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT Name, Username, ProfilePicture FROM Users WHERE Email = @Email", con))
+            {
+                cmd.Parameters.Add("@Email", SqlDbType.VarChar, 100).Value = CurrentEmail;
+                con.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        lblSidebarName.Text = Convert.ToString(reader["Name"]);
+                        lblSidebarHandle.Text = "@" + Convert.ToString(reader["Username"]);
+
+                        string profilePicture = reader["ProfilePicture"] == DBNull.Value
+                            ? ""
+                            : Convert.ToString(reader["ProfilePicture"]).Trim();
+
+                        if (!string.IsNullOrWhiteSpace(profilePicture))
+                        {
+                            if (profilePicture.StartsWith("~/"))
+                                profilePicture = profilePicture.Substring(2);
+
+                            imgSidebarProfile.ImageUrl =
+                                ResolveUrl("~/" + profilePicture.TrimStart('/'));
+
+                            imgSidebarProfile.Visible = true;
+                            pnlSidebarDefaultAvatar.Visible = false;
+                        }
+                        else
+                        {
+                            imgSidebarProfile.Visible = false;
+                            pnlSidebarDefaultAvatar.Visible = true;
+                        }
+                    }
+                }
+            }
+        }
+
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             LoadUsers(txtSearch.Text.Trim());
@@ -137,28 +211,25 @@ namespace EliteTweet
 
         private void LoadUsers(string search)
         {
-            string query = @" SELECT
-                            u.UserId,
-                            u.Name,
-                            u.Username,
-
-                            ISNULL(f.Status, 'None') AS FollowStatus
-
-                        FROM Users u
-
-                        LEFT JOIN Followers f
-                            ON f.FollowingEmail = u.Email
-                            AND f.FollowerEmail = @Email
-
-                        WHERE u.Email <> @Email
-                            AND (
-                                @Search = ''
-                                OR u.Name LIKE '%' + @Search + '%'
-                                OR u.Username LIKE '%' + @Search + '%'
-                                OR CAST(u.UserId AS VARCHAR(20)) = @Search
-                            )
-
-                        ORDER BY u.Name";
+            string query = @"
+                    SELECT
+                        u.UserId,
+                        u.Name,
+                        u.Username,
+                        u.ProfilePicture,
+                        ISNULL(f.Status, 'None') AS FollowStatus
+                    FROM Users u
+                    LEFT JOIN Followers f
+                        ON f.FollowingEmail = u.Email
+                        AND f.FollowerEmail = @Email
+                    WHERE u.Email <> @Email
+                        AND (
+                            @Search = ''
+                            OR u.Name LIKE '%' + @Search + '%'
+                            OR u.Username LIKE '%' + @Search + '%'
+                            OR CAST(u.UserId AS VARCHAR(20)) = @Search
+                        )
+                    ORDER BY u.Name";
 
             using (SqlConnection con = new SqlConnection(strcon))
             using (SqlCommand cmd = new SqlCommand(query, con))

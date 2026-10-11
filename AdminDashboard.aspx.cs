@@ -23,6 +23,7 @@ namespace EliteTweet
                 LoadUsers();
                 LoadTweets();
                 LoadReports();
+                LoadVerificationRequests();
             }
         }
 
@@ -139,6 +140,79 @@ namespace EliteTweet
 
             LoadStats();
             LoadUsers();
+        }
+
+        // ── VERIFICATION REQUESTS ──────────────────────────────
+
+        private void LoadVerificationRequests()
+        {
+            using (SqlConnection con = new SqlConnection(connStr))
+            {
+                string query = @"
+            SELECT UserId, Name, Username, Email
+            FROM Users
+            WHERE VerificationRequest = 1
+              AND ISNULL(IsVerified, 0) = 0
+            ORDER BY UserId DESC";
+
+                using (SqlDataAdapter da = new SqlDataAdapter(query, con))
+                {
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    pnlNoVerificationRequests.Visible = dt.Rows.Count == 0;
+                    rptVerificationRequests.Visible = dt.Rows.Count > 0;
+
+                    rptVerificationRequests.DataSource = dt;
+                    rptVerificationRequests.DataBind();
+                }
+            }
+        }
+
+        protected void rptVerificationRequests_ItemCommand(
+    object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName != "Approve" && e.CommandName != "Reject")
+                return;
+
+            string email = Convert.ToString(e.CommandArgument);
+
+            using (SqlConnection con = new SqlConnection(connStr))
+            {
+                con.Open();
+
+                string query;
+
+                if (e.CommandName == "Approve")
+                {
+                    query = @"
+                UPDATE Users
+                SET IsVerified = 1,
+                    VerificationRequest = 0
+                WHERE Email = @Email
+                  AND VerificationRequest = 1
+                  AND ISNULL(IsVerified, 0) = 0";
+                }
+                else
+                {
+                    query = @"
+                UPDATE Users
+                SET VerificationRequest = 0
+                WHERE Email = @Email
+                  AND VerificationRequest = 1
+                  AND ISNULL(IsVerified, 0) = 0";
+                }
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            LoadStats();
+            LoadUsers();
+            LoadVerificationRequests();
         }
 
         // ── TWEETS ─────────────────────────────────────────────────────

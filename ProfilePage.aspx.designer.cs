@@ -24,6 +24,24 @@ namespace EliteTweet
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
+        /// imgSidebarProfile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgSidebarProfile;
+
+        /// <summary>
+        /// pnlSidebarDefaultAvatar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSidebarDefaultAvatar;
+
+        /// <summary>
         /// lblSidebarName control.
         /// </summary>
         /// <remarks>
@@ -238,6 +256,15 @@ namespace EliteTweet
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNotVerified;
+
+        /// <summary>
+        /// btnGetVerified control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGetVerified;
 
         /// <summary>
         /// pnlVerified control.

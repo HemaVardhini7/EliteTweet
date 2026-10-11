@@ -178,6 +178,14 @@
             font-size: 20px;
             color: #fff;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .tweet-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .tweet-body { flex: 1; min-width: 0; }
@@ -269,6 +277,17 @@
         .empty-state h3 { font-size: 24px; font-weight: 800; color: #e7e9ea; margin-bottom: 8px; }
         .empty-state p  { font-size: 15px; margin: 0; }
 
+        .user-avatar {
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         /* ─── SCROLLBAR HIDE ─── */
         ::-webkit-scrollbar { width: 0; }
     </style>
@@ -313,8 +332,15 @@
 
         <div class="user-profile-bottom">
             <div class="user-avatar">
-                <i class="bi bi-person-fill"></i>
+                <asp:Image ID="imgSidebarProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlSidebarDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
             </div>
+
             <div class="flex-grow-1">
                 <div class="user-info-name">
                     <asp:Label ID="lblSidebarName" runat="server" Text="User" />
@@ -343,13 +369,20 @@
 
         <!-- Bookmarked tweets -->
         <asp:Repeater ID="rptBookmarks" runat="server"
-            OnItemCommand="rptBookmarks_ItemCommand">
+            OnItemCommand="rptBookmarks_ItemCommand"
+            OnItemDataBound="rptBookmarks_ItemDataBound">
             <ItemTemplate>
                 <div class="tweet-card">
 
-                    <div class="tweet-avatar">
-                        <i class="bi bi-person-fill"></i>
-                    </div>
+            <div class="tweet-avatar">
+                <asp:Image ID="imgTweetProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlDefaultTweetAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
+            </div>
 
                     <div class="tweet-body">
                         <div class="tweet-meta">

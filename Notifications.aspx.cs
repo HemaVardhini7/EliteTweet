@@ -11,7 +11,10 @@ namespace EliteTweet
     {
         string strcon = ConfigurationManager
             .ConnectionStrings["TwitterDB"].ConnectionString;
-
+        private string CurrentEmail
+        {
+            get { return Convert.ToString(Session["Email"]); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["Email"] == null && User.Identity.IsAuthenticated)
@@ -27,6 +30,7 @@ namespace EliteTweet
             {
                 LoadRequests();
                 LoadActivity();
+                LoadSidebarUser();
             }
         }
 
@@ -56,6 +60,47 @@ namespace EliteTweet
                 rptRequests.DataBind();
 
                 pnlNoRequests.Visible = dt.Rows.Count == 0;
+            }
+        }
+
+        private void LoadSidebarUser()
+        {
+            using (SqlConnection con = new SqlConnection(strcon))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT Name, Username, ProfilePicture FROM Users WHERE Email = @Email", con))
+            {
+                cmd.Parameters.Add("@Email", SqlDbType.VarChar, 100).Value = CurrentEmail;
+                con.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        lblSidebarName.Text = Convert.ToString(reader["Name"]);
+                        lblSidebarHandle.Text = "@" + Convert.ToString(reader["Username"]);
+
+                        string profilePicture = reader["ProfilePicture"] == DBNull.Value
+                            ? ""
+                            : Convert.ToString(reader["ProfilePicture"]).Trim();
+
+                        if (!string.IsNullOrWhiteSpace(profilePicture))
+                        {
+                            if (profilePicture.StartsWith("~/"))
+                                profilePicture = profilePicture.Substring(2);
+
+                            imgSidebarProfile.ImageUrl =
+                                ResolveUrl("~/" + profilePicture.TrimStart('/'));
+
+                            imgSidebarProfile.Visible = true;
+                            pnlSidebarDefaultAvatar.Visible = false;
+                        }
+                        else
+                        {
+                            imgSidebarProfile.Visible = false;
+                            pnlSidebarDefaultAvatar.Visible = true;
+                        }
+                    }
+                }
             }
         }
 

@@ -673,6 +673,26 @@
         background: rgba(249, 24, 128, 0.1);
     }
 
+    .sidebar-profile-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .tweet-avatar {
+        overflow: hidden;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .tweet-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
     </style>
 </head>
 <body>
@@ -720,7 +740,14 @@
 
         <div class="user-profile-bottom">
             <div class="user-avatar">
-                <i class="bi bi-person-fill"></i>
+                <asp:Image ID="imgSidebarProfile" runat="server"
+                    CssClass="sidebar-profile-img"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlSidebarDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
             </div>
             <div class="flex-grow-1">
                 <div class="user-info-name">
@@ -766,10 +793,17 @@
 
  
         <div class="composer-box">
-            <div class="user-avatar" style="width:44px;height:44px;font-size:20px;flex-shrink:0;">
-                <i class="bi bi-person-fill"></i>
+            <div class="user-avatar" style="overflow:hidden;">
+                <asp:Image ID="Image1" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false"
+                    Style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+
+                <asp:Panel ID="Panel1" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
             </div>
-            <div class="composer-right">
+                <div class="composer-right">
                 <asp:TextBox
                     ID="txtTweet"
                     runat="server"
@@ -812,11 +846,18 @@
         </div>--%>
 
     
-        <asp:Repeater ID="rptTweets" runat="server">
+        <asp:Repeater ID="rptTweets" runat="server" OnItemDataBound="rptTweets_ItemDataBound">
             <ItemTemplate>
                 <div class="tweet-card">
-                    <div class="user-avatar" style="width:44px;height:44px;font-size:20px;flex-shrink:0;">
-                        <i class="bi bi-person-fill"></i>
+                    <div class="user-avatar tweet-avatar" style="width:44px;height:44px;font-size:20px;flex-shrink:0;overflow:hidden;">
+                        <asp:Image ID="imgTweetProfile" runat="server"
+                            AlternateText="Profile picture"
+                            Visible="false"
+                            Style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+
+                        <asp:Panel ID="pnlDefaultTweetAvatar" runat="server">
+                            <i class="bi bi-person-fill"></i>
+                        </asp:Panel>
                     </div>
                     <div class="tweet-content">
                         <div class="tweet-header">
@@ -885,10 +926,17 @@
 
 
         <div class="modal-body">
-            <div class="user-avatar" style="width:44px;height:44px;font-size:20px;flex-shrink:0;">
-                <i class="bi bi-person-fill"></i>
+            <div class="user-avatar" style="width:44px;height:44px;font-size:20px;flex-shrink:0;overflow:hidden;">
+                <asp:Image ID="imgComposerProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false"
+                    Style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+
+                <asp:Panel ID="pnlComposerDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
             </div>
-            <asp:TextBox
+                        <asp:TextBox
                 ID="txtModalTweet"
                 runat="server"
                 TextMode="MultiLine"

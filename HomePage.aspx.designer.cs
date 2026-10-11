@@ -33,6 +33,24 @@ namespace EliteTweet
         protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkLogout;
 
         /// <summary>
+        /// imgSidebarProfile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgSidebarProfile;
+
+        /// <summary>
+        /// pnlSidebarDefaultAvatar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSidebarDefaultAvatar;
+
+        /// <summary>
         /// lblName control.
         /// </summary>
         /// <remarks>
@@ -87,6 +105,24 @@ namespace EliteTweet
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
+        /// Image1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image Image1;
+
+        /// <summary>
+        /// Panel1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Panel1;
+
+        /// <summary>
         /// txtTweet control.
         /// </summary>
         /// <remarks>
@@ -130,6 +166,24 @@ namespace EliteTweet
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlEmptyFeed;
+
+        /// <summary>
+        /// imgComposerProfile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgComposerProfile;
+
+        /// <summary>
+        /// pnlComposerDefaultAvatar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlComposerDefaultAvatar;
 
         /// <summary>
         /// txtModalTweet control.

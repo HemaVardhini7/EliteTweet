@@ -22,13 +22,11 @@ SELECT * FROM OtpVerification;
 SELECT * FROM ContentModeration
 ORDER BY ModerationId DESC;
 
+SELECT Email, Username, ProfilePicture
+FROM Users;
 
 SELECT * FROM sys.tables;
 
-SELECT *
-FROM sys.columns
-WHERE object_id = OBJECT_ID('Users')
-  AND name = 'IsVerified';
 
 SELECT TOP 1 *
 FROM Users;

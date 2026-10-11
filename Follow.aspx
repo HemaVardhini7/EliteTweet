@@ -66,7 +66,16 @@
         <a class="nav-item" href="FirstPage.aspx"><i class="bi bi-box-arrow-right"></i>Log out</a>
         <button class="btn-post-sidebar" onclick="window.location.href='HomePage.aspx'; return false;">Post</button>
         <div class="user-profile-bottom">
-            <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
+            <div class="user-avatar">
+                <asp:Image ID="imgSidebarProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlSidebarDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
+            </div>
+
             <div class="flex-grow-1">
                 <div class="user-info-name"><asp:Label ID="lblSidebarName" runat="server" Text="User" /></div>
                 <div class="user-info-handle"><asp:Label ID="lblSidebarHandle" runat="server" Text="@username" /></div>

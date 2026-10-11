@@ -116,6 +116,14 @@
             font-size: 18px;
             color: #fff;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .user-avatar-sm img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .user-info-name  { font-weight: 700; font-size: 15px; line-height: 1.3; }
@@ -344,6 +352,14 @@
             font-size: 20px;
             color: #fff;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .tweet-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .tweet-content { flex: 1; }
@@ -451,7 +467,9 @@
         <a class="nav-item" href="Notifications.aspx">
             <i class="bi bi-bell"></i> Notifications
         </a>        
-        <a class="nav-item" href="#"><i class="bi bi-people"></i> Follow</a>
+        <a class="nav-item" href="Follow.aspx?tab=following">
+            <i class="bi bi-people"></i> Follow
+        </a>
         <a class="nav-item" href="Bookmarks.aspx">
             <i class="bi bi-bookmark"></i> Bookmarks
         </a>
@@ -461,7 +479,15 @@
         <button class="btn-post-sidebar" onclick="window.location.href='HomePage.aspx'; return false;">Post</button>
 
         <div class="user-profile-bottom">
-            <div class="user-avatar-sm"><i class="bi bi-person-fill"></i></div>
+            <div class="user-avatar-sm">
+                <asp:Image ID="imgSidebarProfile" runat="server"
+                    AlternateText="Profile picture"
+                    Visible="false" />
+
+                <asp:Panel ID="pnlSidebarDefaultAvatar" runat="server">
+                    <i class="bi bi-person-fill"></i>
+                </asp:Panel>
+            </div>
             <div class="flex-grow-1">
                 <div class="user-info-name"><asp:Label ID="lblSidebarName" runat="server" /></div>
                 <div class="user-info-handle"><asp:Label ID="lblSidebarUsername" runat="server" /></div>
@@ -573,17 +599,28 @@
         </div>
 
         <asp:Panel ID="pnlNotVerified" runat="server" CssClass="verify-banner">
-            <button class="verify-close" onclick="this.parentElement.style.display='none'; return false;">
+
+            <button type="button" class="verify-close"
+                onclick="this.parentElement.style.display='none';">
                 <i class="bi bi-x"></i>
             </button>
+
             <div class="verify-banner-title">
                 You aren't verified yet
                 <i class="bi bi-patch-check-fill" style="color:#1d9bf0;"></i>
             </div>
+
             <div class="verify-banner-text">
                 Get verified for boosted replies, analytics, ad-free browsing, and more. Upgrade your profile now.
             </div>
-            <button class="btn-get-verified">Get verified</button>
+
+            <asp:Button
+                ID="btnGetVerified"
+                runat="server"
+                Text="Get verified"
+                CssClass="btn-get-verified"
+                OnClick="btnGetVerified_Click" />
+
         </asp:Panel>
 
         <asp:Panel ID="pnlVerified" runat="server" CssClass="verified-banner" Visible="false">
@@ -599,10 +636,19 @@
         </div>
 
         <div id="tab-posts">
-            <asp:Repeater ID="rptPosts" runat="server">
+            <asp:Repeater ID="rptPosts" runat="server"
+                 OnItemDataBound="rptPosts_ItemDataBound">
                 <ItemTemplate>
                     <div class="tweet-card">
-                        <div class="tweet-avatar"><i class="bi bi-person-fill"></i></div>
+                        <div class="tweet-avatar">
+                            <asp:Image ID="imgPostProfile" runat="server"
+                                AlternateText="Profile picture"
+                                Visible="false" />
+
+                            <asp:Panel ID="pnlPostDefaultAvatar" runat="server">
+                                <i class="bi bi-person-fill"></i>
+                            </asp:Panel>
+                        </div>
                         <div class="tweet-content">
                             <div class="tweet-header">
                                 <span class="tweet-name"><%# Eval("Name") %></span>
@@ -634,10 +680,19 @@
         </div>
 
         <div id="tab-replies" style="display:none;">
-            <asp:Repeater ID="rptReplies" runat="server">
+            <asp:Repeater ID="rptReplies" runat="server"
+                 OnItemDataBound="rptReplies_ItemDataBound">
                 <ItemTemplate>
                     <div class="tweet-card">
-                        <div class="tweet-avatar"><i class="bi bi-person-fill"></i></div>
+                        <div class="tweet-avatar">
+                            <asp:Image ID="imgReplyProfile" runat="server"
+                                AlternateText="Profile picture"
+                                Visible="false" />
+
+                            <asp:Panel ID="pnlReplyDefaultAvatar" runat="server">
+                                <i class="bi bi-person-fill"></i>
+                            </asp:Panel>
+                        </div>
                         <div class="tweet-content">
                             <div class="tweet-header">
                                 <span class="tweet-name"><%# Eval("Name") %></span>
@@ -687,10 +742,19 @@
         </div>  
 
         <div id="tab-likes" style="display:none;">
-            <asp:Repeater ID="rptLikes" runat="server">
+            <asp:Repeater ID="rptLikes" runat="server"
+                    OnItemDataBound="rptLikes_ItemDataBound">
                 <ItemTemplate>
                     <div class="tweet-card">
-                        <div class="tweet-avatar"><i class="bi bi-person-fill"></i></div>
+                    <div class="tweet-avatar">
+                        <asp:Image ID="imgLikeProfile" runat="server"
+                            AlternateText="Profile picture"
+                            Visible="false" />
+
+                        <asp:Panel ID="pnlLikeDefaultAvatar" runat="server">
+                            <i class="bi bi-person-fill"></i>
+                        </asp:Panel>
+                    </div>
                         <div class="tweet-content">
                             <div class="tweet-header">
                                 <span class="tweet-name"><%# Eval("Name") %></span>

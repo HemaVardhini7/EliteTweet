@@ -1,12 +1,13 @@
-﻿using System;
+﻿using EliteTweet.AI;
+using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Web.Security;
-using System.Web.UI;
 using System.Web.Security;
-using EliteTweet.AI;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace EliteTweet
 {
@@ -58,23 +59,74 @@ namespace EliteTweet
         {
             string email = Session["Email"].ToString();
 
-            SqlConnection con = new SqlConnection(strcon);
-            string query = "SELECT Name, Username FROM Users WHERE Email = @Email";
-                SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Email", email);
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                string query = @"
+            SELECT Name, Username, ProfilePicture
+            FROM Users
+            WHERE Email = @Email";
 
-                con.Open();
-                SqlDataReader dr = cmd.ExecuteReader();
-
-                if (dr.Read())
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    lblName.Text = dr["Name"].ToString();
-                    lblUsername.Text = "@" + dr["Username"].ToString();
-                }
-                con.Close();
-            
-        }
+                    cmd.Parameters.AddWithValue("@Email", email);
 
+                    con.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            lblName.Text = dr["Name"].ToString();
+                            lblUsername.Text = "@" + dr["Username"].ToString();
+
+                            string profilePicture = dr["ProfilePicture"] == DBNull.Value
+                                ? ""
+                                : dr["ProfilePicture"].ToString().Trim();
+
+                            if (profilePicture.StartsWith("~/"))
+                            {
+                                profilePicture = profilePicture.Substring(2);
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(profilePicture))
+                            {
+                                string imageUrl = ResolveUrl(
+                                    "~/" + profilePicture.TrimStart('/'));
+
+                                // Sidebar avatar
+                                imgSidebarProfile.ImageUrl = imageUrl;
+                                imgSidebarProfile.Visible = true;
+                                pnlSidebarDefaultAvatar.Visible = false;
+
+                                // Main feed composer avatar
+                                Image1.ImageUrl = imageUrl;
+                                Image1.Visible = true;
+                                Panel1.Visible = false;
+
+                                // Post modal avatar
+                                imgComposerProfile.ImageUrl = imageUrl;
+                                imgComposerProfile.Visible = true;
+                                pnlComposerDefaultAvatar.Visible = false;
+                            }
+                            else
+                            {
+                                // Sidebar default avatar
+                                imgSidebarProfile.Visible = false;
+                                pnlSidebarDefaultAvatar.Visible = true;
+
+                                // Main feed default avatar
+                                Image1.Visible = false;
+                                Panel1.Visible = true;
+
+                                // Modal default avatar
+                                imgComposerProfile.Visible = false;
+                                pnlComposerDefaultAvatar.Visible = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         private void LoadTweets()
         {
             using (SqlConnection con = new SqlConnection(strcon))
@@ -87,6 +139,7 @@ namespace EliteTweet
                     t.CreatedAt,
                     u.Name,
                     u.Username,
+                    u.ProfilePicture,
                     ISNULL(u.IsVerified, 0) AS IsVerified,
 
                     (SELECT COUNT(*)
@@ -163,6 +216,45 @@ namespace EliteTweet
 
                     pnlEmptyFeed.Visible = dt.Rows.Count == 0;
                 }
+            }
+        }
+
+        protected void rptTweets_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType != ListItemType.Item &&
+                e.Item.ItemType != ListItemType.AlternatingItem)
+            {
+                return;
+            }
+
+            DataRowView row = (DataRowView)e.Item.DataItem;
+
+            System.Web.UI.WebControls.Image img =
+                (System.Web.UI.WebControls.Image)e.Item.FindControl("imgTweetProfile");
+
+            System.Web.UI.WebControls.Panel defaultAvatar =
+                (System.Web.UI.WebControls.Panel)e.Item.FindControl("pnlDefaultTweetAvatar");
+
+            string profilePicture = row["ProfilePicture"] == DBNull.Value
+                ? ""
+                : row["ProfilePicture"].ToString().Trim();
+
+            // Support paths stored with ~/ or without it.
+            if (profilePicture.StartsWith("~/"))
+            {
+                profilePicture = profilePicture.Substring(2);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profilePicture))
+            {
+                img.ImageUrl = ResolveUrl("~/" + profilePicture.TrimStart('/'));
+                img.Visible = true;
+                defaultAvatar.Visible = false;
+            }
+            else
+            {
+                img.Visible = false;
+                defaultAvatar.Visible = true;
             }
         }
 
