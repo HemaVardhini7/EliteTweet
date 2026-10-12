@@ -10,7 +10,7 @@
 
     <style>
         body {
-            background-color: #15202b;
+            background: #000;
             min-height: 100vh;
         }
 
@@ -20,6 +20,7 @@
             border-radius: 15px;
             max-width: 380px;
             width: 100%;
+/*            border: 1px solid white;*/
         }
 
         label { color: #8899a6; }

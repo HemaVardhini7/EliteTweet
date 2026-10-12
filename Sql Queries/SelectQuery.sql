@@ -26,7 +26,3 @@ SELECT Email, Username, ProfilePicture
 FROM Users;
 
 SELECT * FROM sys.tables;
-
-
-SELECT TOP 1 *
-FROM Users;
